@@ -54,7 +54,7 @@ EpicsInterfaceImpl::EpicsInterfaceImpl(const std::string& portName, EpicsFactory
         asynFloat64Mask  |
         //asynOctetMask |
         asynInt8ArrayMask |
-        //asynInt16ArrayMask |
+        asynInt16ArrayMask |
         asynInt32ArrayMask |
         //asynFloat32ArrayMask |
         asynFloat64ArrayMask
@@ -65,7 +65,7 @@ EpicsInterfaceImpl::EpicsInterfaceImpl(const std::string& portName, EpicsFactory
         asynFloat64Mask |
         //asynOctetMask |
         asynInt8ArrayMask |
-        //asynInt16ArrayMask |
+        asynInt16ArrayMask |
         asynInt32ArrayMask |
         //asynFloat32ArrayMask |
         asynFloat64ArrayMask
@@ -121,6 +121,8 @@ recordDataFTVL_t dataTypeToEpicsString(const PVBaseImpl& pv)
             return recordDataFTVL_t("waveform", "asynInt8ArrayIn", "CHAR");
         case dataType_t::dataUint8Array:
             return recordDataFTVL_t("waveform", "asynInt8ArrayIn", "UCHAR");
+        case dataType_t::dataInt16Array:
+            return recordDataFTVL_t("waveform", "asynInt16ArrayIn", "SHORT");
         case dataType_t::dataInt32Array:
             return recordDataFTVL_t("waveform", "asynInt32ArrayIn", "LONG");
         case dataType_t::dataFloat64Array:
@@ -150,6 +152,8 @@ recordDataFTVL_t dataTypeToEpicsString(const PVBaseImpl& pv)
             return recordDataFTVL_t("waveform", "asynInt8ArrayOut", "CHAR");
         case dataType_t::dataUint8Array:
             return recordDataFTVL_t("waveform", "asynInt8ArrayOut", "UCHAR");
+        case dataType_t::dataInt16Array:
+            return recordDataFTVL_t("waveform", "asynInt16ArrayOut", "SHORT");
         case dataType_t::dataInt32Array:
             return recordDataFTVL_t("waveform", "asynInt32ArrayOut", "LONG");
         case dataType_t::dataFloat64Array:
@@ -322,6 +326,11 @@ void EpicsInterfaceImpl::push(const PVBaseImpl& pv, const timespec& timestamp, c
 void EpicsInterfaceImpl::push(const PVBaseImpl& pv, const timespec& timestamp, const double& value)
 {
     pushOneValue<epicsFloat64, asynFloat64Interrupt>(pv, timestamp, (epicsFloat64)value, asynStdInterfaces.float64InterruptPvt);
+}
+
+void EpicsInterfaceImpl::push(const PVBaseImpl& pv, const timespec& timestamp, const std::vector<std::int16_t> & value)
+{
+    pushArray<epicsInt16, asynInt16ArrayInterrupt>(pv, timestamp, (epicsInt16*)value.data(), value.size(), asynStdInterfaces.int16ArrayInterruptPvt);
 }
 
 void EpicsInterfaceImpl::push(const PVBaseImpl& pv, const timespec& timestamp, const std::vector<std::int32_t> & value)
@@ -562,6 +571,12 @@ asynStatus EpicsInterfaceImpl::readInt8Array(asynUser *pasynUser, epicsInt8* pVa
     return readArray<std::int8_t>(pasynUser, (std::int8_t*)pValue, nElements, nIn);
 }
 
+asynStatus EpicsInterfaceImpl::readInt16Array(asynUser *pasynUser, epicsInt16* pValue,
+                                              size_t nElements, size_t *nIn)
+{
+    return readArray<std::int16_t>(pasynUser, (std::int16_t*)pValue, nElements, nIn);
+}
+
 asynStatus EpicsInterfaceImpl::readInt32Array(asynUser *pasynUser, epicsInt32* pValue,
                                               size_t nElements, size_t *nIn)
 {
@@ -580,6 +595,12 @@ asynStatus EpicsInterfaceImpl::writeInt8Array(asynUser *pasynUser, epicsInt8* pV
                                                size_t nElements)
 {
     return writeArray<std::int8_t>(pasynUser, (std::int8_t*)pValue, nElements);
+}
+
+asynStatus EpicsInterfaceImpl::writeInt16Array(asynUser *pasynUser, epicsInt16* pValue,
+                                               size_t nElements)
+{
+    return writeArray<std::int16_t>(pasynUser, (std::int16_t*)pValue, nElements);
 }
 
 asynStatus EpicsInterfaceImpl::writeInt32Array(asynUser *pasynUser, epicsInt32* pValue,
