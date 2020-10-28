@@ -46,6 +46,7 @@ public:
     virtual void push(const PVBaseImpl& pv, const timespec& timestamp, const std::vector<std::int16_t> & value);
     virtual void push(const PVBaseImpl& pv, const timespec& timestamp, const std::vector<std::int32_t> & value);
     virtual void push(const PVBaseImpl& pv, const timespec& timestamp, const std::vector<double> & value);
+    virtual void push(const PVBaseImpl& pv, const timespec& timestamp, const std::vector<float> & value);
     virtual void push(const PVBaseImpl& pv, const timespec& timestamp, const std::string& value);
 
     virtual asynStatus readInt32(asynUser *pasynUser, epicsInt32 *value);
@@ -67,6 +68,11 @@ public:
     virtual asynStatus readFloat64Array(asynUser *pasynUser, double* pValue,
                                                   size_t nElements, size_t *nIn);
     virtual asynStatus writeFloat64Array(asynUser *pasynUser, double* pValue,
+                                                   size_t nElements);
+
+    virtual asynStatus readFloat32Array(asynUser *pasynUser, float* pValue,
+                                                  size_t nElements, size_t *nIn);
+    virtual asynStatus writeFloat32Array(asynUser *pasynUser, float* pValue,
                                                    size_t nElements);
 
     virtual asynStatus readInt32Array(asynUser *pasynUser, epicsInt32 *value,
